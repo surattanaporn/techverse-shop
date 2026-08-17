@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cat Food Select - ร้านขายอาหารแมวแนะนำ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    body {
+      background-color: #faf7f2;
+      color: #4a4a4a;
+    }
+
+    /* Navigation Bar */
+    header {
+      background-color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #ff8c42;
+    }
+
+    nav a {
+      color: #666;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-size: 1rem;
+      transition: color 0.3s;
+      cursor: pointer;
+    }
+
+    nav a:hover, nav a.active {
+      color: #ff8c42;
+      font-weight: 600;
+    }
+
+    .cart-badge {
+      background: #ff8c42;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 8px;
+      font-size: 0.8rem;
+      margin-left: 4px;
+    }
+
+    /* Layout & Sections */
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #d96b27;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    /* Filter Controls */
+    .filter-container {
+      background: #ffffff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .filter-container select, .filter-container input {
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #333;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #ff8c42;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #e0742f;
+    }
+
+    /* Product Cards Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .product-card-body {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .product-tag {
+      display: inline-block;
+      background: #fff0e6;
+      color: #ff8c42;
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      width: fit-content;
+    }
+
+    .product-desc {
+      font-size: 0.85rem;
+      color: #777;
+      margin-bottom: 0.8rem;
+    }
+
+    .product-price {
+      font-size: 1.2rem;
+      color: #2ed573;
+      font-weight: 600;
+      margin-top: auto;
+      margin-bottom: 1rem;
+    }
+
+    /* Cart Table */
+    .cart-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .cart-table th, .cart-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-table th {
+      background-color: #fff0e6;
+      color: #d96b27;
+    }
+
+    .cart-summary {
+      margin-top: 1.5rem;
+      text-align: right;
+      font-size: 1.3rem;
+    }
+
+    .btn-danger {
+      background-color: #ff6b6b;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">🐾 Cat Food Select</div>
+    <nav>
+      <a href="#home" class="nav-link active" onclick="switchTab(event, 'home')">รายการสินค้า</a>
+      <a href="#recommend" class="nav-link" onclick="switchTab(event, 'recommend')">ระบบเลือกอาหารแมว</a>
+      <a href="#cart" class="nav-link" onclick="switchTab(event, 'cart')">
+        ตะกร้าสินค้า <span id="cart-count" class="cart-badge">0</span>
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- หน้า 1: รายการสินค้าทั้งหมด -->
+    <section id="home" class="section active">
+      <h1>อาหารแมวคุณภาพทั้งหมด</h1>
+      
+      <div class="filter-container">
+        <input type="text" id="search-input" placeholder="ค้นหาชื่อยี่ห้อ หรือสูตร..." oninput="filterProducts()">
+        <select id="type-select" onchange="filterProducts()">
+          <option value="all">เนื้อสัมผัสทั้งหมด</option>
+          <option value="dry">อาหารเม็ด</option>
+          <option value="wet">อาหารเปียก</option>
+        </select>
+        <select id="stage-select" onchange="filterProducts()">
+          <option value="all">ช่วงวัยทั้งหมด</option>
+          <option value="kitten">ลูกแมว (1-12 เดือน)</option>
+          <option value="adult">แมวโต (1 ปีขึ้นไป)</option>
+          <option value="senior">แมวสูงวัย (7 ปีขึ้นไป)</option>
+        </select>
+      </div>
+
+      <div id="product-list" class="product-grid"></div>
+    </section>
+
+    <!-- หน้า 2: ระบบแนะนำอาหารแมว -->
+    <section id="recommend" class="section">
+      <h1>ค้นหาอาหารที่เหมาะกับน้องแมวของคุณ</h1>
+      <div class="filter-container">
+        <label>ช่วงวัย:</label>
+        <select id="rec-stage" onchange="recommendProducts()">
+          <option value="kitten">ลูกแมว (1-12 เดือน)</option>
+          <option value="adult">แมวโต (1 ปีขึ้นไป)</option>
+          <option value="senior">แมวสูงวัย (7 ปีขึ้นไป)</option>
+        </select>
+        
+        <label>สูตรเน้นการดูแล:</label>
+        <select id="rec-formula" onchange="recommendProducts()">
+          <option value="all">สูตรทั่วไป</option>
+          <option value="hairball">ขับก้อนขน (Hairball)</option>
+          <option value="weight">ควบคุมน้ำหนัก (Weight Control)</option>
+          <option value="urinary">ดูแลระบบทางเดินปัสสาวะ</option>
+          <option value="skin">บำรุงขนและผิวหนัง</option>
+        </select>
+
+        <button class="btn" onclick="recommendProducts()">ค้นหาอาหารที่เหมาะสม</button>
+      </div>
+
+      <div id="recommend-list" class="product-grid"></div>
+    </section>
+
+    <!-- หน้า 3: ตะกร้าสินค้า -->
+    <section id="cart" class="section">
+      <h1>ตะกร้าสินค้าของคุณ</h1>
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>รายการสินค้า</th>
+            <th>ราคา</th>
+            <th>จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="cart-items"></tbody>
+      </table>
+      
+      <div class="cart-summary">
+        ราคารวมทั้งหมด: <span id="total-price" style="color:#2ed573; font-weight:600;">0</span> บาท
+        <br><br>
+        <button class="btn" onclick="checkout()">ยืนยันการสั่งซื้อ</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const products = [
+      { id: 1, brand: 'Royal Canin', name: 'Royal Canin Mother & Babycat (อาหารเม็ด)', type: 'dry', stage: 'kitten', formula: 'skin', price: 200, desc: 'โภชนาการสายเวชศาสตร์ เสริมภูมิคุ้มกัน เม็ดเล็กเคี้ยวง่าย ย่อยง่าย', img: 'https://i.ibb.co/pBtyPSXV/royal-canin-mother-jpg.jpg' },
+      { id: 101, brand: 'Royal Canin', name: 'Royal Canin Mother & Babycat Ultra Soft Mousse (อาหารเปียก)', type: 'wet', stage: 'kitten', formula: 'skin', price: 55, desc: 'เนื้อมูสนุ่มพิเศษ กินง่าย ช่วยเสริมภูมิคุ้มกันสำหรับลูกแมวอายุ 1-4 เดือน', img: 'https://i.ibb.co/gbMcQdSN/Royal-Canin-Mother-Babycat-Mousse-12-x-195-g-Complete-Food-for-Cats-Especially-for-the-Mothe.jpg' },
+      { id: 2, brand: 'Purina ONE', name: 'Purina ONE Healthy Kitten (อาหารเม็ด)', type: 'dry', stage: 'kitten', formula: 'skin', price: 150, desc: 'อาหารซูเปอร์พรีเมียม โปรตีนสูงจากเนื้อไก่แท้ ผสม DHA บำรุงสมอง', img: 'https://i.ibb.co/1Yr4Xdf5/Purina-One-Indoor-Advantage-Chicken-Adult-Dry-Cat-Food-2-8kg.jpg' },
+      { id: 3, brand: 'Kaniva', name: 'Kaniva Mother & Kitten Formula', type: 'dry', stage: 'kitten', formula: 'skin', price: 100, desc: 'สูตร No Corn, No Wheat, No Gluten ผสมโคลอสตรุ้ม บำรุงขนด้วย Salmon Oil', img: 'https://i.ibb.co/vnTzLbW/Kaniva-Omega-370-400.jpg' },
+      { id: 4, brand: 'Nekko', name: 'Nekko Kitten Mousse', type: 'wet', stage: 'kitten', formula: 'all', price: 20, desc: 'อาหารเปียกเนื้อมูสนุ่มพิเศษ เช่น ทูน่ามูสผสมแซลมอน ทานง่าย ย่อยสะดวก', img: 'https://i.ibb.co/rGJWDS4k/NEKKO-Kitten-Tuna-Mousse-with-Salmon-70gm-Pet-Food-Cat-Food-Dry-Food.jpg' },
+      { id: 5, brand: 'Pramy', name: 'Pramy Kitten Mousse / Dry', type: 'wet', stage: 'kitten', formula: 'skin', price: 20, desc: 'สูตรปลาทูน่ามูส / ไก่และแซลมอนมูส เกรดพรีเมียม เสริมภูมิคุ้มกันวัยเยาว์', img: 'https://i.ibb.co/Q74n9nwx/Pramy.jpg' },
+      { id: 6, brand: 'Me-O', name: 'Me-O / Me-O Gold Kitten', type: 'dry', stage: 'kitten', formula: 'all', price: 85, desc: 'สูตรลูกแมวรสปลาทะเล หรือเกรดโกลด์ เสริมสร้างการเติบโตอย่างสมบูรณ์', img: 'https://i.ibb.co/HpR7KfrS/images.jpg' },
+      { id: 7, brand: 'Whiskas', name: 'Whiskas Junior 2-12 Months', type: 'dry', stage: 'kitten', formula: 'all', price: 95, desc: 'พ็อกเก็ตกรอบนอกนุ่มในผสมนม แคลเซียมสูง เหมาะสำหรับลูกแมวหย่านม', img: 'https://i.ibb.co/vCD7mKTq/images-1.jpg' },
+      { id: 8, brand: 'Silver', name: 'Silver Kitten', type: 'dry', stage: 'kitten', formula: 'urinary', price: 150, desc: 'แบรนด์ไทยเน้นคุมโซเดียมถนอมไต เม็ดขนาดเล็ก เสริมโปรตีนและแคลเซียม', img: 'https://i.ibb.co/HpDsg8Lp/images-2.jpg' },
+      { id: 9, brand: 'Friskies', name: 'Friskies Kitten Discoveries', type: 'dry', stage: 'kitten', formula: 'all', price: 80, desc: 'อาหารเม็ดรสชาติยอดฮิต รวมรสไก่ ปลา และนม อร่อยถูกใจลูกแมวทานยาก', img: 'https://i.ibb.co/XcVJRvM/images-3.jpg' },
+      { id: 10, brand: 'Clover', name: 'Clover Ultra Premium (Kitten Stage)', type: 'dry', stage: 'kitten', formula: 'skin', price: 370, desc: 'เกรด Holistic สูตร All Life Stages ใช้ได้ตั้งแต่วัยหย่านม โซเดียมต่ำ ถนอมไต', img: 'https://i.ibb.co/rf3MYftm/5e176c7f4ae1302fc0dfff99e3df6568.jpg' },
+      { id: 11, brand: 'Royal Canin', name: 'Royal Canin Indoor 27', type: 'dry', stage: 'adult', formula: 'hairball', price: 200, desc: 'โภชนาการสมบูรณ์แบบ ลดกลิ่นมูล คุมพลังงาน และมี Care Line ดูแลเฉพาะทาง', img: 'https://i.ibb.co/CTQyxdG/images-4.jpg' },
+      { id: 12, brand: 'Purina ONE', name: 'Purina ONE Healthy Adult / Indoor Advantage', type: 'dry', stage: 'adult', formula: 'hairball', price: 150, desc: 'ทำจากแซลมอน/ไก่แท้ ช่วยลดก้อนขน คุมน้ำหนัก และมีสูตร Urinary Care', img: 'https://i.ibb.co/1Yr4Xdf5/Purina-One-Indoor-Advantage-Chicken-Adult-Dry-Cat-Food-2-8kg.jpg' },
+      { id: 13, brand: 'Kaniva', name: 'Kaniva Chicken,Salmon', type: 'dry', stage: 'adult', formula: 'skin', price: 100, desc: 'ไม่มีข้าวโพด/กูเลเตน โดดเด่นบำรุงขนด้วย Evening Primrose Oil & Salmon Oil', img: 'https://i.ibb.co/PvjmKfSX/images-5.jpg' },
+      { id: 14, brand: 'Nekko', name: 'Nekko Adult in Jelly / Gravy', type: 'wet', stage: 'adult', formula: 'all', price: 20, desc: 'อาหารเปียกทูน่าหน้าต่างๆ ยอดนิยม และไลน์ Gold/Health สำหรับดูแลสุขภาพ', img: 'https://i.ibb.co/CKjHP9Lg/8859160400098-1.webp' },
+      { id: 15, brand: 'Pramy', name: 'Pramy Grain-Free Adult / Wet Pouch', type: 'dry', stage: 'adult', formula: 'skin', price: 240, desc: 'สูตร Grain-Free ปราศจากธัญพืช เสริมคุณประโยชน์บำรุงขนและทางเดินปัสสาวะ', img: 'https://i.ibb.co/R4hxzPmk/PRAMY-PMGR1-G8g2-UXBc-Od-RHa789-zoom.avif' },
+      { id: 16, brand: 'Me-O', name: 'Me-O Adult / Me-O Gold Indoor', type: 'dry', stage: 'adult', formula: 'hairball', price: 85, desc: 'สูตรซีฟู้ด/ทูน่า รสชาติอร่อย หรือสูตร Gold Indoor สำหรับแมวเลี้ยงในบ้าน', img: 'https://i.ibb.co/rrNPvY3/images-6.jpg' },
+      { id: 17, brand: 'Whiskas', name: 'Whiskas Adult 1+ (Ocean Fish / Tuna)', type: 'dry', stage: 'adult', formula: 'all', price: 95, desc: 'อาหารแมวแมสมาร์เก็ต สารอาหารครบถ้วนตามช่วงวัย 1 ปีขึ้นไป มีสูตร Hairball', img: 'https://i.ibb.co/M5WkwyPp/shopping.webp' },
+      { id: 18, brand: 'Silver', name: 'Silver Adult Tasty / Fit', type: 'dry', stage: 'adult', formula: 'urinary', price: 150, desc: 'เน้นควบคุมระดับโซเดียม ปรับสมดุล pH ในปัสสาวะ ช่วยป้องกันโรคนิ่ว', img: 'https://i.ibb.co/C3Gm2m62/images-7.jpg' },
+      { id: 19, brand: 'Friskies', name: 'Friskies Seafood Sensations / Indoor', type: 'dry', stage: 'adult', formula: 'weight', price: 80, desc: 'รวมรสซีฟู้ดหอมอร่อย หรือสูตร Indoor Delights ช่วยขับก้อนขนและคุมพลังงาน', img: 'https://i.ibb.co/Yq0kcZG/images-8.jpg' },
+      { id: 20, brand: 'Clover', name: 'Clover Ultra Premium (Adult Stage)', type: 'dry', stage: 'adult', formula: 'skin', price: 370, desc: 'เกรดโฮลิสติก มี Beet Pulp ช่วยขับก้อนขน เสริม Zinc และ Salmon Oil บำรุงขน', img: 'https://i.ibb.co/KxPhSx4d/images-9.jpg' },
+      { id: 21, brand: 'Royal Canin', name: 'Royal Canin Indoor 7+ / Sensory Senior', type: 'dry', stage: 'senior', formula: 'urinary', price: 200, desc: 'สูตรชะลอวัย ชะลอความเสื่อมของเซลล์ ปรับระดับแร่ธาตุถนอมไตสำหรับแมว 7 ปี+', img: 'https://i.ibb.co/KxhRwkjn/images-10.jpg' },
+      { id: 22, brand: 'Purina ONE', name: 'Purina ONE Senior 7+ / Mature Adult', type: 'dry', stage: 'senior', formula: 'urinary', price: 150, desc: 'สูตรแมวแก่ 7 ปีขึ้นไป โภชนาการย่อยง่าย ถนอมระบบทางเดินปัสสาวะและไต', img: 'https://i.ibb.co/JRwhVy5Q/images-11.jpg' },
+      { id: 23, brand: 'Kaniva', name: 'Kaniva Senior Care 7+', type: 'dry', stage: 'senior', formula: 'all', price: 100, desc: 'เน้นบำรุงข้อต่อและกระดูกด้วยคอลลาเจน Type 2 และผงกระดูกปลาฉลาม', img: 'https://i.ibb.co/B2Kzvp5j/images-12.jpg' },
+      { id: 24, brand: 'Nekko', name: 'Nekko Senior 7+ / 11+', type: 'wet', stage: 'senior', formula: 'all', price: 20, desc: 'อาหารเปียกชิ้นเล็กนุ่ม เคี้ยวง่าย เพิ่มไฟเบอร์ช่วยขับถ่ายและกลูโคซามีน', img: 'https://i.ibb.co/h1ByXMjd/images-13.jpg' },
+      { id: 25, brand: 'Pramy', name: 'Pramy Senior 7+ (Aging Care)', type: 'wet', stage: 'senior', formula: 'skin', price: 20, desc: 'สูตรชะลอวัยสำหรับแมวสูงวัย สารอาหารย่อยและดูดซึมง่าย ทานสะดวก', img: 'https://i.ibb.co/RkcwYJc4/images-14.jpg' },
+      { id: 26, brand: 'Me-O', name: 'Me-O Senior 7+ (Dry & Pouch)', type: 'dry', stage: 'senior', formula: 'urinary', price: 85, desc: 'ปรับสัดส่วนโซเดียมและฟอสฟอรัสให้เหมาะสม ถนอมไต แมวสูงวัยเคี้ยวง่าย', img: 'https://i.ibb.co/N69VpjR7/f01cce1aecdb77f9d7a2a98e09daa9c4.png' },
+      { id: 27, brand: 'Whiskas', name: 'Whiskas Senior 7+ Pouch / Dry', type: 'wet', stage: 'senior', formula: 'all', price: 20, desc: 'เนื้อสัมผัสนุ่ม ย่อยง่าย ปรับระดับแร่ธาตุเพื่อดูแลสุขภาพแมวสูงวัยโดยเฉพาะ', img: 'https://i.ibb.co/Tq4xXdGZ/images-15.jpg' },
+      { id: 28, brand: 'Silver', name: 'Silver Senior 7+', type: 'dry', stage: 'senior', formula: 'urinary', price: 150, desc: 'ชูจุดเด่นลดภาระการทำงานของไต คุมโซเดียม พร้อมสารบำรุงข้อต่อแมวแก่', img: 'https://i.ibb.co/zhzL5DpS/images-16.jpg' },
+      { id: 29, brand: 'Friskies', name: 'Friskies Senior Soft & Dry Mix', type: 'dry', stage: 'senior', formula: 'all', price: 80, desc: 'เน้นผสมผสานอาหารเปียกเนื้อนุ่มร่วมกับอาหารเม็ด เคี้ยวง่าย อร่อยไม่จำเจ', img: 'https://i.ibb.co/5XwSm73c/images-17.jpg' },
+      { id: 30, brand: 'Clover', name: 'Clover Ultra Premium (Senior Stage)', type: 'dry', stage: 'senior', formula: 'urinary', price: 370, desc: 'สูตร All Life Stages เกรดโฮลิสติก โซเดียมและแมกนีเซียมต่ำ เป็นมิตรต่อไตแมวแก่', img: 'https://i.ibb.co/KxPhSx4d/images-9.jpg' }
+    ];
+
+    let cart = [];
+
+    window.onload = () => {
+      displayProducts(products, 'product-list');
+      recommendProducts(); // เรียกเพื่อโหลดรายการแรกเริ่มในหน้าระบบเลือก
+    };
+
+    function switchTab(event, tabId) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    function displayProducts(items, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+        container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 2rem;">ไม่พบสินค้าที่ตรงตามเงื่อนไข</p>';
+        return;
+      }
+
+      items.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${product.img}" alt="${product.name}">
+          <div class="product-card-body">
+            <div class="product-title">${product.name}</div>
+            <span class="product-tag">${product.type === 'dry' ? 'อาหารเม็ด' : 'อาหารเปียก'}</span>
+            <div class="product-desc">${product.desc}</div>
+            <div class="product-price">${product.price.toLocaleString()} บาท</div>
+            <button class="btn" onclick="addToCart(${product.id})">เพิ่มลงตะกร้า</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterProducts() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const type = document.getElementById('type-select').value;
+      const stage = document.getElementById('stage-select').value;
+
+      const filtered = products.filter(item => {
+        const matchesSearch = item.name.toLowerCase().includes(search);
+        const matchesType = type === 'all' || item.type === type;
+        const matchesStage = stage === 'all' || item.stage === stage;
+        return matchesSearch && matchesType && matchesStage;
+      });
+
+      displayProducts(filtered, 'product-list');
+    }
+
+    function recommendProducts() {
+      const selectedStage = document.getElementById('rec-stage').value;
+      const selectedFormula = document.getElementById('rec-formula').value;
+
+      const recommended = products.filter(item => {
+        const matchesStage = item.stage === selectedStage;
+        const matchesFormula = selectedFormula === 'all' || item.formula === selectedFormula;
+        return matchesStage && matchesFormula;
+      });
+
+      displayProducts(recommended, 'recommend-list');
+    }
+
+    function addToCart(productId) {
+      const item = products.find(p => p.id === productId);
+      cart.push(item);
+      updateCartUI();
+      alert(`เพิ่ม ${item.name} ลงในตะกร้าเรียบร้อย!`);
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      document.getElementById('cart-count').innerText = cart.length;
+      const cartItemsContainer = document.getElementById('cart-items');
+      cartItemsContainer.innerHTML = '';
+
+      let total = 0;
+      cart.forEach((item, index) => {
+        total += item.price;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.price.toLocaleString()} บาท</td>
+          <td><button class="btn btn-danger" onclick="removeFromCart(${index})">ลบ</button></td>
+        `;
+        cartItemsContainer.appendChild(tr);
+      });
+
+      document.getElementById('total-price').innerText = total.toLocaleString();
+    }
+
+    function checkout() {
+      if (cart.length === 0) {
+        alert('ตะกร้าสินค้าของคุณยังไม่มีสินค้า');
+        return;
+      }
+      alert('ขอบคุณสำหรับคำสั่งซื้อ!');
+      cart = [];
+      updateCartUI();
+    }
+  </script>
+</body>
+</html>
