@@ -3,453 +3,536 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cat Food Select - ร้านขายอาหารแมวแนะนำ</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>PetCare Planner - ระบบวางแผนสุขภาพสัตว์เลี้ยง</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Kanit', sans-serif;
+    /* 🎨 ธีมสีส้มอบอุ่น (Warm Pets Theme) */
+    :root {
+      --primary: #ea580c;
+      --primary-dark: #c2410c;
+      --primary-light: #ffedd5;
+      --bg: #fffbfb;
+      --card: #ffffff;
+      --text: #1c1917;
+      --text-muted: #78716c;
+      --border: #fed7aa;
+      --shadow: 0 10px 25px -5px rgba(234, 88, 12, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
     }
 
-    body {
-      background-color: #faf7f2;
-      color: #4a4a4a;
-    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Thonburi, sans-serif; margin: 0; padding: 0; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; }
 
-    /* Navigation Bar */
+    /* Top Navigation Bar */
     header {
-      background-color: #ffffff;
+      background: #ffffff;
+      border-bottom: 2px solid var(--border);
+      padding: 0.8rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem 2rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       position: sticky;
       top: 0;
       z-index: 100;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.05);
     }
 
-    .logo {
-      font-size: 1.6rem;
-      font-weight: 600;
-      color: #ff8c42;
-    }
-
-    nav a {
-      color: #666;
-      text-decoration: none;
-      margin-left: 1.5rem;
-      font-size: 1rem;
-      transition: color 0.3s;
-      cursor: pointer;
-    }
-
-    nav a:hover, nav a.active {
-      color: #ff8c42;
-      font-weight: 600;
-    }
-
-    .cart-badge {
-      background: #ff8c42;
-      color: white;
-      border-radius: 50%;
-      padding: 2px 8px;
-      font-size: 0.8rem;
-      margin-left: 4px;
-    }
-
-    /* Layout & Sections */
-    main {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    h1 {
-      margin-bottom: 1.5rem;
-      text-align: center;
-      color: #d96b27;
-    }
-
-    .section {
-      display: none;
-    }
-
-    .section.active {
-      display: block;
-    }
-
-    /* Filter Controls */
-    .filter-container {
-      background: #ffffff;
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin-bottom: 2rem;
+    .brand {
       display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
       align-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      gap: 10px;
+      cursor: pointer;
     }
+    .brand h1 { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
 
-    .filter-container select, .filter-container input {
-      padding: 0.6rem 1rem;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      background: #fff;
-      color: #333;
-      font-size: 1rem;
-      outline: none;
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
     }
-
-    .btn {
-      padding: 0.6rem 1.2rem;
+    .tab-btn {
+      background: transparent;
+      color: var(--text-muted);
       border: none;
+      padding: 0.6rem 1.1rem;
       border-radius: 8px;
-      background-color: #ff8c42;
-      color: white;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.2s;
     }
+    .tab-btn:hover { background: #fff7ed; color: var(--primary-dark); }
+    .tab-btn.active { background: var(--primary-light); color: var(--primary-dark); }
 
-    .btn:hover {
-      background-color: #e0742f;
+    /* Layout Container */
+    .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    .screen {
+      display: none;
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
     }
+    .screen.active { display: block; }
 
-    /* Product Cards Grid */
-    .product-grid {
+    .screen-header {
+      border-bottom: 2px solid var(--bg);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .screen-header h2 { color: var(--primary-dark); font-size: 1.3rem; }
+
+    /* 2 Column Grid Layout */
+    .grid-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
     }
 
-    .product-card {
-      background-color: #ffffff;
+    /* Tree Card UI */
+    .tree-box {
+      border: 1px solid var(--border);
+      padding: 1rem;
       border-radius: 12px;
-      overflow: hidden;
+      background: #fffcf8;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .tree-node { margin-left: 0.8rem; border-left: 2px dashed #fdba74; padding-left: 0.8rem; margin-top: 0.5rem; }
+    .node-title { cursor: pointer; font-weight: 600; color: var(--primary-dark); font-size: 0.95rem; }
+    
+    .leaf-item {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      margin: 6px 0;
+      border-radius: 8px;
       display: flex;
-      flex-direction: column;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      transition: transform 0.3s;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .leaf-item:hover { border-color: var(--primary); transform: translateY(-1px); }
+    .leaf-item.selected { border-color: var(--primary); background: var(--primary-light); font-weight: bold; }
+
+    /* Preview Card */
+    .preview-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      background: #ffffff;
     }
 
-    .product-card:hover {
-      transform: translateY(-5px);
+    /* 🟩 รูปพรีวิวสี่เหลี่ยมจัตุรัส (Square 1:1) */
+    .preview-img {
+      width: 220px;
+      height: 220px;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 12px;
+      margin: 0 auto 1rem auto;
+      display: block;
+      border: 1px solid var(--border);
     }
 
-    .product-card img {
-      width: 100%;
-      height: 180px;
+    /* Thumbnail รูปจิ๋วสี่เหลี่ยมจัตุรัส */
+    .pet-img-thumb {
+      width: 36px;
+      height: 36px;
+      aspect-ratio: 1 / 1;
+      border-radius: 6px;
       object-fit: cover;
     }
 
-    .product-card-body {
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .product-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-
-    .product-tag {
-      display: inline-block;
-      background: #fff0e6;
-      color: #ff8c42;
-      font-size: 0.8rem;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-bottom: 0.5rem;
-      width: fit-content;
-    }
-
-    .product-desc {
-      font-size: 0.85rem;
-      color: #777;
-      margin-bottom: 0.8rem;
-    }
-
-    .product-price {
-      font-size: 1.2rem;
-      color: #2ed573;
-      font-weight: 600;
-      margin-top: auto;
-      margin-bottom: 1rem;
-    }
-
-    /* Cart Table */
-    .cart-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #ffffff;
+    /* 🟩 รูปพาสปอร์ตสี่เหลี่ยมจัตุรัส (Square 1:1) */
+    .passport-pet-img {
+      width: 160px;
+      height: 160px;
+      aspect-ratio: 1 / 1;
       border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      object-fit: cover;
+      border: 3px solid var(--primary);
+      margin: 1rem auto;
+      display: block;
+      box-shadow: 0 4px 10px rgba(234, 88, 12, 0.15);
     }
 
-    .cart-table th, .cart-table td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid #eee;
+    /* 🟩 รูปไดอะแกรมหน้า 2 สี่เหลี่ยมจัตุรัส (Square 1:1) */
+    .diagram-img {
+      width: 240px;
+      height: 240px;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid var(--primary);
+      margin: 0 auto 1.2rem auto;
+      display: block;
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.1);
     }
 
-    .cart-table th {
-      background-color: #fff0e6;
-      color: #d96b27;
+    /* Edge & Step Display */
+    .edge-list { list-style: none; }
+    .edge-item {
+      background: #fffcf8;
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+    }
+    
+    .step-item {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      padding: 12px 16px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
 
-    .cart-summary {
-      margin-top: 1.5rem;
-      text-align: right;
-      font-size: 1.3rem;
+    /* Highlight Card */
+    .highlight-card {
+      background: linear-gradient(135deg, #fff7ed, #ffedd5);
+      border: 1px solid var(--primary);
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-top: 1rem;
     }
 
-    .btn-danger {
-      background-color: #ff6b6b;
-      padding: 0.3rem 0.8rem;
-      font-size: 0.9rem;
+    /* Buttons */
+    .btn-group { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem; }
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.4rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn-sub { background: #78716c; }
+    .btn-sub:hover { background: #57534e; }
+
+    /* Passport Ticket */
+    .passport {
+      background: #ffffff;
+      border: 2px dashed var(--primary);
+      padding: 2rem;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .nav-tabs { display: none; }
+    }
+
+    @media print {
+      header, .btn-group { display: none !important; }
+      .screen { display: block !important; border: none; box-shadow: none; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Top Navigation Bar -->
   <header>
-    <div class="logo">🐾 Cat Food Select</div>
-    <nav>
-      <a href="#home" class="nav-link active" onclick="switchTab(event, 'home')">รายการสินค้า</a>
-      <a href="#recommend" class="nav-link" onclick="switchTab(event, 'recommend')">ระบบเลือกอาหารแมว</a>
-      <a href="#cart" class="nav-link" onclick="switchTab(event, 'cart')">
-        ตะกร้าสินค้า <span id="cart-count" class="cart-badge">0</span>
-      </a>
-    </nav>
+    <div class="brand" onclick="goToScreen(1)">
+      <h1>🐾 PetCare Planner</h1>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tab1" onclick="goToScreen(1)">1. เลือกสายพันธุ์</button>
+      <button class="tab-btn" id="tab2" onclick="goToScreen(2)">2. แผนสุขภาพ</button>
+      <button class="tab-btn" id="tab3" onclick="goToScreen(3)">3. รายละเอียดขั้นตอน</button>
+      <button class="tab-btn" id="tab4" onclick="goToScreen(4)">4. พาสปอร์ต</button>
+    </div>
   </header>
 
-  <main>
-    <!-- หน้า 1: รายการสินค้าทั้งหมด -->
-    <section id="home" class="section active">
-      <h1>อาหารแมวคุณภาพทั้งหมด</h1>
-      
-      <div class="filter-container">
-        <input type="text" id="search-input" placeholder="ค้นหาชื่อยี่ห้อ หรือสูตร..." oninput="filterProducts()">
-        <select id="type-select" onchange="filterProducts()">
-          <option value="all">เนื้อสัมผัสทั้งหมด</option>
-          <option value="dry">อาหารเม็ด</option>
-          <option value="wet">อาหารเปียก</option>
-        </select>
-        <select id="stage-select" onchange="filterProducts()">
-          <option value="all">ช่วงวัยทั้งหมด</option>
-          <option value="kitten">ลูกแมว (1-12 เดือน)</option>
-          <option value="adult">แมวโต (1 ปีขึ้นไป)</option>
-          <option value="senior">แมวสูงวัย (7 ปีขึ้นไป)</option>
-        </select>
+  <div class="container">
+
+    <!-- Screen 1: เลือกสายพันธุ์ -->
+    <div id="screen1" class="screen active">
+      <div class="screen-header">
+        <h2>หน้า 1 : ค้นหาและเลือกสายพันธุ์สัตว์เลี้ยง (Rooted Tree 4 Levels)</h2>
       </div>
 
-      <div id="product-list" class="product-grid"></div>
-    </section>
+      <div class="grid-2">
+        <div>
+          <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">โครงสร้างต้นไม้ (Tree Selection):</h3>
+          <div class="tree-box">
+            <div id="treeContainer"></div>
+          </div>
+        </div>
 
-    <!-- หน้า 2: ระบบแนะนำอาหารแมว -->
-    <section id="recommend" class="section">
-      <h1>ค้นหาอาหารที่เหมาะกับน้องแมวของคุณ</h1>
-      <div class="filter-container">
-        <label>ช่วงวัย:</label>
-        <select id="rec-stage" onchange="recommendProducts()">
-          <option value="kitten">ลูกแมว (1-12 เดือน)</option>
-          <option value="adult">แมวโต (1 ปีขึ้นไป)</option>
-          <option value="senior">แมวสูงวัย (7 ปีขึ้นไป)</option>
-        </select>
+        <div>
+          <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">สัตว์เลี้ยงที่เลือก (Selected Leaf Node):</h3>
+          <div class="preview-card">
+            <img id="previewPetImg" src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=500&auto=format&fit=crop&q=60" alt="Pet Preview" class="preview-img">
+            <h2 id="selectedPetDisplay" style="color: var(--primary-dark); font-size: 1.2rem; margin-bottom: 0.3rem;">โกลเด้น รีทรีฟเวอร์ (Golden Retriever)</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">เลือกสายพันธุ์เรียบร้อยแล้ว กดปุ่มด้านล่างเพื่อไปคำนวณแผนสุขภาพ</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn" onclick="goToScreen(2)">ไปหน้า 2: เลือกแผนสุขภาพ ➔</button>
+      </div>
+    </div>
+
+    <!-- Screen 2: คำนวณแผนสุขภาพ (Graph & Dijkstra) -->
+    <div id="screen2" class="screen">
+      <div class="screen-header">
+        <h2>หน้า 2 : วิเคราะห์และเปรียบเทียบแผนสุขภาพ (Weighted Graph)</h2>
+      </div>
+
+      <!-- ⚡ รูปประจำสายพันธุ์ที่เลือกจะอัปเดตตรงนี้แบบ Real-time -->
+      <div style="text-align: center;">
+        <img id="planPetImg" src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=500&auto=format&fit=crop&q=60" alt="รูปสัตว์เลี้ยงที่เลือก" class="diagram-img">
+        <h3 id="planPetNameDisplay" style="color: var(--primary-dark); margin-bottom: 1rem;">แผนสุขภาพสำหรับ: โกลเด้น รีทรีฟเวอร์ (Golden Retriever)</h3>
+      </div>
+
+      <h3>รายการขั้นตอนและค่าน้ำหนักจริง (Edges & Real Weights):</h3>
+      <ul id="edgeListDisplay" class="edge-list" style="margin-top: 0.5rem;"></ul>
+
+      <div class="highlight-card">
+        <h3>🏆 แผนสุขภาพที่คุ้มค่าและครบถ้วนที่สุด (Dijkstra Shortest Path)</h3>
+        <p style="margin-top: 0.4rem;"><strong>ระยะเวลาดูแลสะสม:</strong> 20 สัปดาห์ | <strong>ค่าใช้จ่ายรวมจริง (Total Cost):</strong> <span id="totalCostDisplay" style="font-size: 1.2rem; color: var(--primary-dark); font-weight: bold;">3,550 บาท</span></p>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-sub" onclick="goToScreen(1)">⬅ ย้อนกลับ</button>
+        <button class="btn" onclick="goToScreen(3)">ไปหน้า 3: รายละเอียดการบริการ ➔</button>
+      </div>
+    </div>
+
+    <!-- Screen 3: รายละเอียด Path -->
+    <div id="screen3" class="screen">
+      <div class="screen-header">
+        <h2>หน้า 3 : ลำดับขั้นตอนการรับบริการจริง (Path Traversal)</h2>
+      </div>
+
+      <p style="margin-bottom: 1rem; color: var(--text-muted);">ขั้นตอนการเข้ารับบริการคลินิกตามลำดับเวลาที่เหมาะสม (Path Traversal):</p>
+      <div id="pathDisplay"></div>
+
+      <div class="btn-group">
+        <button class="btn btn-sub" onclick="goToScreen(2)">⬅ ย้อนกลับ</button>
+        <button class="btn" onclick="goToScreen(4)">ยืนยันและออกพาสปอร์ต ➔</button>
+      </div>
+    </div>
+
+    <!-- Screen 4: e-Ticket พาสปอร์ต -->
+    <div id="screen4" class="screen">
+      <div class="screen-header" style="text-align: center;">
+        <h2>หน้า 4 : ออกพาสปอร์ตประจำตัวสัตว์เลี้ยง (Pet Passport)</h2>
+      </div>
+
+      <div class="passport">
+        <h2>🐾 PET HEALTH PASSPORT</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Discrete Mathematics Final Project</p>
         
-        <label>สูตรเน้นการดูแล:</label>
-        <select id="rec-formula" onchange="recommendProducts()">
-          <option value="all">สูตรทั่วไป</option>
-          <option value="hairball">ขับก้อนขน (Hairball)</option>
-          <option value="weight">ควบคุมน้ำหนัก (Weight Control)</option>
-          <option value="urinary">ดูแลระบบทางเดินปัสสาวะ</option>
-          <option value="skin">บำรุงขนและผิวหนัง</option>
-        </select>
+        <img id="passportPetImg" src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=500&auto=format&fit=crop&q=60" alt="รูปสัตว์เลี้ยง" class="passport-pet-img">
 
-        <button class="btn" onclick="recommendProducts()">ค้นหาอาหารที่เหมาะสม</button>
+        <hr style="border: none; border-top: 1px dashed var(--border); margin: 1rem 0;">
+        <p><strong>รหัสแผนงาน:</strong> #PET-DIJKSTRA-2026</p>
+        <p style="margin: 0.5rem 0;"><strong>สายพันธุ์สัตว์เลี้ยง:</strong> <br><span id="passportPetName" style="color:var(--primary-dark); font-weight:bold; font-size: 1.1rem;">โกลเด้น รีทรีฟเวอร์ (Golden Retriever)</span></p>
+        <p><strong>ยอดชำระรวมประเมินจริง (Total Weight):</strong> <br><span id="passportCost" style="font-size:1.3rem; color:var(--primary-dark); font-weight:bold;">3,550 บาท</span></p>
+        <hr style="border: none; border-top: 1px dashed var(--border); margin: 1rem 0;">
+        <button class="btn" onclick="window.print()">🖨️ พิมพ์เอกสารพาสปอร์ต</button>
       </div>
 
-      <div id="recommend-list" class="product-grid"></div>
-    </section>
-
-    <!-- หน้า 3: ตะกร้าสินค้า -->
-    <section id="cart" class="section">
-      <h1>ตะกร้าสินค้าของคุณ</h1>
-      <table class="cart-table">
-        <thead>
-          <tr>
-            <th>รายการสินค้า</th>
-            <th>ราคา</th>
-            <th>จัดการ</th>
-          </tr>
-        </thead>
-        <tbody id="cart-items"></tbody>
-      </table>
-      
-      <div class="cart-summary">
-        ราคารวมทั้งหมด: <span id="total-price" style="color:#2ed573; font-weight:600;">0</span> บาท
-        <br><br>
-        <button class="btn" onclick="checkout()">ยืนยันการสั่งซื้อ</button>
+      <div class="btn-group">
+        <button class="btn btn-sub" onclick="goToScreen(1)">🔄 เริ่มทำรายการใหม่</button>
       </div>
-    </section>
-  </main>
+    </div>
+
+  </div>
 
   <script>
-    const products = [
-      { id: 1, brand: 'Royal Canin', name: 'Royal Canin Mother & Babycat (อาหารเม็ด)', type: 'dry', stage: 'kitten', formula: 'skin', price: 200, desc: 'โภชนาการสายเวชศาสตร์ เสริมภูมิคุ้มกัน เม็ดเล็กเคี้ยวง่าย ย่อยง่าย', img: 'https://i.ibb.co/pBtyPSXV/royal-canin-mother-jpg.jpg' },
-      { id: 101, brand: 'Royal Canin', name: 'Royal Canin Mother & Babycat Ultra Soft Mousse (อาหารเปียก)', type: 'wet', stage: 'kitten', formula: 'skin', price: 55, desc: 'เนื้อมูสนุ่มพิเศษ กินง่าย ช่วยเสริมภูมิคุ้มกันสำหรับลูกแมวอายุ 1-4 เดือน', img: 'https://i.ibb.co/gbMcQdSN/Royal-Canin-Mother-Babycat-Mousse-12-x-195-g-Complete-Food-for-Cats-Especially-for-the-Mothe.jpg' },
-      { id: 2, brand: 'Purina ONE', name: 'Purina ONE Healthy Kitten (อาหารเม็ด)', type: 'dry', stage: 'kitten', formula: 'skin', price: 150, desc: 'อาหารซูเปอร์พรีเมียม โปรตีนสูงจากเนื้อไก่แท้ ผสม DHA บำรุงสมอง', img: 'https://i.ibb.co/1Yr4Xdf5/Purina-One-Indoor-Advantage-Chicken-Adult-Dry-Cat-Food-2-8kg.jpg' },
-      { id: 3, brand: 'Kaniva', name: 'Kaniva Mother & Kitten Formula', type: 'dry', stage: 'kitten', formula: 'skin', price: 100, desc: 'สูตร No Corn, No Wheat, No Gluten ผสมโคลอสตรุ้ม บำรุงขนด้วย Salmon Oil', img: 'https://i.ibb.co/vnTzLbW/Kaniva-Omega-370-400.jpg' },
-      { id: 4, brand: 'Nekko', name: 'Nekko Kitten Mousse', type: 'wet', stage: 'kitten', formula: 'all', price: 20, desc: 'อาหารเปียกเนื้อมูสนุ่มพิเศษ เช่น ทูน่ามูสผสมแซลมอน ทานง่าย ย่อยสะดวก', img: 'https://i.ibb.co/rGJWDS4k/NEKKO-Kitten-Tuna-Mousse-with-Salmon-70gm-Pet-Food-Cat-Food-Dry-Food.jpg' },
-      { id: 5, brand: 'Pramy', name: 'Pramy Kitten Mousse / Dry', type: 'wet', stage: 'kitten', formula: 'skin', price: 20, desc: 'สูตรปลาทูน่ามูส / ไก่และแซลมอนมูส เกรดพรีเมียม เสริมภูมิคุ้มกันวัยเยาว์', img: 'https://i.ibb.co/Q74n9nwx/Pramy.jpg' },
-      { id: 6, brand: 'Me-O', name: 'Me-O / Me-O Gold Kitten', type: 'dry', stage: 'kitten', formula: 'all', price: 85, desc: 'สูตรลูกแมวรสปลาทะเล หรือเกรดโกลด์ เสริมสร้างการเติบโตอย่างสมบูรณ์', img: 'https://i.ibb.co/HpR7KfrS/images.jpg' },
-      { id: 7, brand: 'Whiskas', name: 'Whiskas Junior 2-12 Months', type: 'dry', stage: 'kitten', formula: 'all', price: 95, desc: 'พ็อกเก็ตกรอบนอกนุ่มในผสมนม แคลเซียมสูง เหมาะสำหรับลูกแมวหย่านม', img: 'https://i.ibb.co/vCD7mKTq/images-1.jpg' },
-      { id: 8, brand: 'Silver', name: 'Silver Kitten', type: 'dry', stage: 'kitten', formula: 'urinary', price: 150, desc: 'แบรนด์ไทยเน้นคุมโซเดียมถนอมไต เม็ดขนาดเล็ก เสริมโปรตีนและแคลเซียม', img: 'https://i.ibb.co/HpDsg8Lp/images-2.jpg' },
-      { id: 9, brand: 'Friskies', name: 'Friskies Kitten Discoveries', type: 'dry', stage: 'kitten', formula: 'all', price: 80, desc: 'อาหารเม็ดรสชาติยอดฮิต รวมรสไก่ ปลา และนม อร่อยถูกใจลูกแมวทานยาก', img: 'https://i.ibb.co/XcVJRvM/images-3.jpg' },
-      { id: 10, brand: 'Clover', name: 'Clover Ultra Premium (Kitten Stage)', type: 'dry', stage: 'kitten', formula: 'skin', price: 370, desc: 'เกรด Holistic สูตร All Life Stages ใช้ได้ตั้งแต่วัยหย่านม โซเดียมต่ำ ถนอมไต', img: 'https://i.ibb.co/rf3MYftm/5e176c7f4ae1302fc0dfff99e3df6568.jpg' },
-      { id: 11, brand: 'Royal Canin', name: 'Royal Canin Indoor 27', type: 'dry', stage: 'adult', formula: 'hairball', price: 200, desc: 'โภชนาการสมบูรณ์แบบ ลดกลิ่นมูล คุมพลังงาน และมี Care Line ดูแลเฉพาะทาง', img: 'https://i.ibb.co/CTQyxdG/images-4.jpg' },
-      { id: 12, brand: 'Purina ONE', name: 'Purina ONE Healthy Adult / Indoor Advantage', type: 'dry', stage: 'adult', formula: 'hairball', price: 150, desc: 'ทำจากแซลมอน/ไก่แท้ ช่วยลดก้อนขน คุมน้ำหนัก และมีสูตร Urinary Care', img: 'https://i.ibb.co/1Yr4Xdf5/Purina-One-Indoor-Advantage-Chicken-Adult-Dry-Cat-Food-2-8kg.jpg' },
-      { id: 13, brand: 'Kaniva', name: 'Kaniva Chicken,Salmon', type: 'dry', stage: 'adult', formula: 'skin', price: 100, desc: 'ไม่มีข้าวโพด/กูเลเตน โดดเด่นบำรุงขนด้วย Evening Primrose Oil & Salmon Oil', img: 'https://i.ibb.co/PvjmKfSX/images-5.jpg' },
-      { id: 14, brand: 'Nekko', name: 'Nekko Adult in Jelly / Gravy', type: 'wet', stage: 'adult', formula: 'all', price: 20, desc: 'อาหารเปียกทูน่าหน้าต่างๆ ยอดนิยม และไลน์ Gold/Health สำหรับดูแลสุขภาพ', img: 'https://i.ibb.co/CKjHP9Lg/8859160400098-1.webp' },
-      { id: 15, brand: 'Pramy', name: 'Pramy Grain-Free Adult / Wet Pouch', type: 'dry', stage: 'adult', formula: 'skin', price: 240, desc: 'สูตร Grain-Free ปราศจากธัญพืช เสริมคุณประโยชน์บำรุงขนและทางเดินปัสสาวะ', img: 'https://i.ibb.co/R4hxzPmk/PRAMY-PMGR1-G8g2-UXBc-Od-RHa789-zoom.avif' },
-      { id: 16, brand: 'Me-O', name: 'Me-O Adult / Me-O Gold Indoor', type: 'dry', stage: 'adult', formula: 'hairball', price: 85, desc: 'สูตรซีฟู้ด/ทูน่า รสชาติอร่อย หรือสูตร Gold Indoor สำหรับแมวเลี้ยงในบ้าน', img: 'https://i.ibb.co/rrNPvY3/images-6.jpg' },
-      { id: 17, brand: 'Whiskas', name: 'Whiskas Adult 1+ (Ocean Fish / Tuna)', type: 'dry', stage: 'adult', formula: 'all', price: 95, desc: 'อาหารแมวแมสมาร์เก็ต สารอาหารครบถ้วนตามช่วงวัย 1 ปีขึ้นไป มีสูตร Hairball', img: 'https://i.ibb.co/M5WkwyPp/shopping.webp' },
-      { id: 18, brand: 'Silver', name: 'Silver Adult Tasty / Fit', type: 'dry', stage: 'adult', formula: 'urinary', price: 150, desc: 'เน้นควบคุมระดับโซเดียม ปรับสมดุล pH ในปัสสาวะ ช่วยป้องกันโรคนิ่ว', img: 'https://i.ibb.co/C3Gm2m62/images-7.jpg' },
-      { id: 19, brand: 'Friskies', name: 'Friskies Seafood Sensations / Indoor', type: 'dry', stage: 'adult', formula: 'weight', price: 80, desc: 'รวมรสซีฟู้ดหอมอร่อย หรือสูตร Indoor Delights ช่วยขับก้อนขนและคุมพลังงาน', img: 'https://i.ibb.co/Yq0kcZG/images-8.jpg' },
-      { id: 20, brand: 'Clover', name: 'Clover Ultra Premium (Adult Stage)', type: 'dry', stage: 'adult', formula: 'skin', price: 370, desc: 'เกรดโฮลิสติก มี Beet Pulp ช่วยขับก้อนขน เสริม Zinc และ Salmon Oil บำรุงขน', img: 'https://i.ibb.co/KxPhSx4d/images-9.jpg' },
-      { id: 21, brand: 'Royal Canin', name: 'Royal Canin Indoor 7+ / Sensory Senior', type: 'dry', stage: 'senior', formula: 'urinary', price: 200, desc: 'สูตรชะลอวัย ชะลอความเสื่อมของเซลล์ ปรับระดับแร่ธาตุถนอมไตสำหรับแมว 7 ปี+', img: 'https://i.ibb.co/KxhRwkjn/images-10.jpg' },
-      { id: 22, brand: 'Purina ONE', name: 'Purina ONE Senior 7+ / Mature Adult', type: 'dry', stage: 'senior', formula: 'urinary', price: 150, desc: 'สูตรแมวแก่ 7 ปีขึ้นไป โภชนาการย่อยง่าย ถนอมระบบทางเดินปัสสาวะและไต', img: 'https://i.ibb.co/JRwhVy5Q/images-11.jpg' },
-      { id: 23, brand: 'Kaniva', name: 'Kaniva Senior Care 7+', type: 'dry', stage: 'senior', formula: 'all', price: 100, desc: 'เน้นบำรุงข้อต่อและกระดูกด้วยคอลลาเจน Type 2 และผงกระดูกปลาฉลาม', img: 'https://i.ibb.co/B2Kzvp5j/images-12.jpg' },
-      { id: 24, brand: 'Nekko', name: 'Nekko Senior 7+ / 11+', type: 'wet', stage: 'senior', formula: 'all', price: 20, desc: 'อาหารเปียกชิ้นเล็กนุ่ม เคี้ยวง่าย เพิ่มไฟเบอร์ช่วยขับถ่ายและกลูโคซามีน', img: 'https://i.ibb.co/h1ByXMjd/images-13.jpg' },
-      { id: 25, brand: 'Pramy', name: 'Pramy Senior 7+ (Aging Care)', type: 'wet', stage: 'senior', formula: 'skin', price: 20, desc: 'สูตรชะลอวัยสำหรับแมวสูงวัย สารอาหารย่อยและดูดซึมง่าย ทานสะดวก', img: 'https://i.ibb.co/RkcwYJc4/images-14.jpg' },
-      { id: 26, brand: 'Me-O', name: 'Me-O Senior 7+ (Dry & Pouch)', type: 'dry', stage: 'senior', formula: 'urinary', price: 85, desc: 'ปรับสัดส่วนโซเดียมและฟอสฟอรัสให้เหมาะสม ถนอมไต แมวสูงวัยเคี้ยวง่าย', img: 'https://i.ibb.co/N69VpjR7/f01cce1aecdb77f9d7a2a98e09daa9c4.png' },
-      { id: 27, brand: 'Whiskas', name: 'Whiskas Senior 7+ Pouch / Dry', type: 'wet', stage: 'senior', formula: 'all', price: 20, desc: 'เนื้อสัมผัสนุ่ม ย่อยง่าย ปรับระดับแร่ธาตุเพื่อดูแลสุขภาพแมวสูงวัยโดยเฉพาะ', img: 'https://i.ibb.co/Tq4xXdGZ/images-15.jpg' },
-      { id: 28, brand: 'Silver', name: 'Silver Senior 7+', type: 'dry', stage: 'senior', formula: 'urinary', price: 150, desc: 'ชูจุดเด่นลดภาระการทำงานของไต คุมโซเดียม พร้อมสารบำรุงข้อต่อแมวแก่', img: 'https://i.ibb.co/zhzL5DpS/images-16.jpg' },
-      { id: 29, brand: 'Friskies', name: 'Friskies Senior Soft & Dry Mix', type: 'dry', stage: 'senior', formula: 'all', price: 80, desc: 'เน้นผสมผสานอาหารเปียกเนื้อนุ่มร่วมกับอาหารเม็ด เคี้ยวง่าย อร่อยไม่จำเจ', img: 'https://i.ibb.co/5XwSm73c/images-17.jpg' },
-      { id: 30, brand: 'Clover', name: 'Clover Ultra Premium (Senior Stage)', type: 'dry', stage: 'senior', formula: 'urinary', price: 370, desc: 'สูตร All Life Stages เกรดโฮลิสติก โซเดียมและแมกนีเซียมต่ำ เป็นมิตรต่อไตแมวแก่', img: 'https://i.ibb.co/KxPhSx4d/images-9.jpg' }
-    ];
-
-    let cart = [];
-
-    window.onload = () => {
-      displayProducts(products, 'product-list');
-      recommendProducts(); // เรียกเพื่อโหลดรายการแรกเริ่มในหน้าระบบเลือก
+    // 1. TREE DATA STRUCTURE (4 Levels)
+    const petTree = {
+      name: "ศูนย์สัตว์เลี้ยง (Root)",
+      children: [
+        {
+          name: "สุนัข (Dog - Level 1)",
+          children: [
+            {
+              name: "ขนาดใหญ่ (Level 2)",
+              children: [
+                { id: "Golden", name: "โกลเด้น รีทรีฟเวอร์ (Golden Retriever)", img: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=500&auto=format&fit=crop&q=60" },
+                { id: "Labrador", name: "ลาบราดอร์ รีทรีฟเวอร์ (Labrador Retriever)", img: "https://i.ibb.co/nqzSh4Ms/images.jpg" }
+              ]
+            },
+            {
+              name: "ขนาดกลาง (Level 2)",
+              children: [
+                { id: "Beagle", name: "บีเกิล (Beagle)", img: "https://i.ibb.co/tMTt5ZhD/images-1.jpg" },
+                { id: "Shiba", name: "ชิบะ อินุ (Shiba Inu)", img: "https://i.ibb.co/x867gkM8/images-2.jpg" }
+              ]
+            },
+            {
+              name: "ขนาดเล็ก (Level 2)",
+              children: [
+                { id: "Pug", name: "ปั๊ก (Pug)", img: "https://i.ibb.co/qMsFv86g/images-3.jpg" },
+                { id: "Poodle", name: "พุดเดิ้ล (Poodle)", img: "https://i.ibb.co/s9y38s51/images-4.jpg" },
+                { id: "Pomeranian", name: "ปอมเมอเรเนียน (Pomeranian)", img: "https://i.ibb.co/fGrF1Zcb/images-5.jpg" }
+              ]
+            }
+          ]
+        },
+        {
+          name: "แมว (Cat - Level 1)",
+          children: [
+            {
+              name: "แมวไทยโบราณ (Level 2)",
+              children: [
+                { id: "Siamese", name: "วิเชียรมาศ (Siamese)", img: "https://i.ibb.co/jPN2kwqB/images-6.jpg" },
+                { id: "KhaoManee", name: "ขาวมณี (Khao Manee)", img: "https://i.ibb.co/d94p4g1/images-7.jpg" },
+                { id: "Korat", name: "โคราช / สีสวาด (Silver Blue)", img: "https://i.ibb.co/21BCmDfG/images-8.jpg" }
+              ]
+            },
+            {
+              name: "ต่างประเทศ (Level 2)",
+              children: [
+                { id: "ScottishFold", name: "สก็อตติช โฟล์ค (Scottish Fold)", img: "https://i.ibb.co/q3WHzcVb/images-9.jpg" },
+                { id: "Persian", name: "เปอร์เซีย (Persian)", img: "https://i.ibb.co/qY9R01C1/images-10.jpg" },
+                { id: "MaineCoon", name: "เมนคูน (Maine Coon)", img: "https://i.ibb.co/TNJYwNM/images-11.jpg" }
+              ]
+            }
+          ]
+        }
+      ]
     };
 
-    function switchTab(event, tabId) {
-      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-      document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-      
-      document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+    // 2. REALISTIC WEIGHTED GRAPH DATA
+    const petGraph = {
+      "Start": [{ to: "Checkup", time: 1, cost: 350 }],
+      "Checkup": [{ to: "Vaccine_Combo", time: 3, cost: 450 }, { to: "Microchip", time: 1, cost: 700 }],
+      "Vaccine_Combo": [{ to: "Vaccine_Rabies", time: 4, cost: 250 }, { to: "Grooming", time: 1, cost: 400 }],
+      "Vaccine_Rabies": [{ to: "Neutering", time: 12, cost: 2500 }],
+      "Microchip": [{ to: "Neutering", time: 12, cost: 2500 }],
+      "Grooming": [],
+      "Neutering": []
+    };
+
+    const nodeLabels = {
+      "Start": "เริ่มต้นรับเลี้ยง (ตรวจแรกรับ)",
+      "Checkup": "ตรวจสุขภาพพื้นฐาน & ถ่ายพยาธิ",
+      "Vaccine_Combo": "ฉีดวัคซีนรวม (เข็มแรก)",
+      "Microchip": "ฝังไมโครชิประบุตัวตน",
+      "Vaccine_Rabies": "ฉีดวัคซีนป้องกันพิษสุนัขบ้า",
+      "Grooming": "กรูมมิ่ง อาบน้ำตัดขน ทำความสะอาด",
+      "Neutering": "ผ่าตัดทำหมัน (เมื่ออายุถึงเกณฑ์)"
+    };
+
+    function renderTree(node, container) {
+      const div = document.createElement('div');
+      div.className = 'tree-node';
+
+      if (node.children) {
+        const title = document.createElement('span');
+        title.className = 'node-title';
+        title.innerHTML = '📂 ' + node.name;
+        title.onclick = () => {
+          const childDiv = div.querySelector('.node-children');
+          if (childDiv) childDiv.style.display = childDiv.style.display === 'none' ? 'block' : 'none';
+        };
+        div.appendChild(title);
+
+        const childrenDiv = document.createElement('div');
+        childrenDiv.className = 'node-children';
+        node.children.forEach(child => renderTree(child, childrenDiv));
+        div.appendChild(childrenDiv);
+      } else {
+        const leaf = document.createElement('div');
+        leaf.className = 'leaf-item' + (node.name.includes('โกลเด้น') ? ' selected' : '');
+        leaf.onclick = () => selectPet(leaf, node.name, node.img);
+        leaf.innerHTML = `
+          <input type="radio" name="petRadio" ${node.name.includes('โกลเด้น') ? 'checked' : ''}>
+          <img src="${node.img}" alt="${node.name}" class="pet-img-thumb">
+          <strong>🐾 ${node.name}</strong>
+        `;
+        div.appendChild(leaf);
+      }
+
+      container.appendChild(div);
     }
 
-    function displayProducts(items, containerId) {
-      const container = document.getElementById(containerId);
+    // ⚡ ฟังก์ชั่นเลือกลูกค้า อัปเดตรูปภาพและชื่อทุกจุดแบบ Real-time
+    function selectPet(element, petName, petImg) {
+      document.querySelectorAll('.leaf-item').forEach(el => {
+        el.classList.remove('selected');
+        el.querySelector('input').checked = false;
+      });
+      element.classList.add('selected');
+      element.querySelector('input').checked = true;
+
+      // 1. อัปเดตข้อมูลหน้า 1 (เลือกสายพันธุ์)
+      document.getElementById('selectedPetDisplay').textContent = petName;
+      if (petImg) document.getElementById('previewPetImg').src = petImg;
+
+      // 2. อัปเดตข้อมูลหน้า 2 (แผนสุขภาพ) แบบ Real-time
+      document.getElementById('planPetNameDisplay').textContent = "แผนสุขภาพสำหรับ: " + petName;
+      if (petImg) document.getElementById('planPetImg').src = petImg;
+
+      // 3. อัปเดตข้อมูลหน้า 4 (พาสปอร์ต)
+      document.getElementById('passportPetName').textContent = petName;
+      if (petImg) document.getElementById('passportPetImg').src = petImg;
+    }
+
+    function renderGraphInfo() {
+      const edgeContainer = document.getElementById('edgeListDisplay');
+      edgeContainer.innerHTML = '';
+
+      let count = 0;
+      for (const [from, edges] of Object.entries(petGraph)) {
+        edges.forEach(edge => {
+          count++;
+          const li = document.createElement('li');
+          li.className = 'edge-item';
+          li.innerHTML = `<div><strong>Edge ${count}:</strong> ${nodeLabels[from]} ➔ <strong>${nodeLabels[edge.to]}</strong></div><div><strong>${edge.cost} บาท</strong> (เว้นระยะ ${edge.time} สัปดาห์)</div>`;
+          edgeContainer.appendChild(li);
+        });
+      }
+    }
+
+    function renderPathSteps() {
+      const pathNodes = ["Start", "Checkup", "Vaccine_Combo", "Vaccine_Rabies", "Neutering"];
+      const container = document.getElementById('pathDisplay');
       container.innerHTML = '';
 
-      if (items.length === 0) {
-        container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 2rem;">ไม่พบสินค้าที่ตรงตามเงื่อนไข</p>';
-        return;
-      }
-
-      items.forEach(product => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <img src="${product.img}" alt="${product.name}">
-          <div class="product-card-body">
-            <div class="product-title">${product.name}</div>
-            <span class="product-tag">${product.type === 'dry' ? 'อาหารเม็ด' : 'อาหารเปียก'}</span>
-            <div class="product-desc">${product.desc}</div>
-            <div class="product-price">${product.price.toLocaleString()} บาท</div>
-            <button class="btn" onclick="addToCart(${product.id})">เพิ่มลงตะกร้า</button>
-          </div>
-        `;
-        container.appendChild(card);
+      pathNodes.forEach((nodeKey, idx) => {
+        const step = document.createElement('div');
+        step.className = 'step-item';
+        step.innerHTML = `<strong>ขั้นตอนที่ ${idx + 1}:</strong> ${nodeLabels[nodeKey]}`;
+        container.appendChild(step);
       });
     }
 
-    function filterProducts() {
-      const search = document.getElementById('search-input').value.toLowerCase();
-      const type = document.getElementById('type-select').value;
-      const stage = document.getElementById('stage-select').value;
-
-      const filtered = products.filter(item => {
-        const matchesSearch = item.name.toLowerCase().includes(search);
-        const matchesType = type === 'all' || item.type === type;
-        const matchesStage = stage === 'all' || item.stage === stage;
-        return matchesSearch && matchesType && matchesStage;
-      });
-
-      displayProducts(filtered, 'product-list');
+    function goToScreen(num) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+      
+      document.getElementById(`screen${num}`).classList.add('active');
+      const currentTab = document.getElementById(`tab${num}`);
+      if (currentTab) currentTab.classList.add('active');
+      
+      window.scrollTo(0, 0);
     }
 
-    function recommendProducts() {
-      const selectedStage = document.getElementById('rec-stage').value;
-      const selectedFormula = document.getElementById('rec-formula').value;
-
-      const recommended = products.filter(item => {
-        const matchesStage = item.stage === selectedStage;
-        const matchesFormula = selectedFormula === 'all' || item.formula === selectedFormula;
-        return matchesStage && matchesFormula;
-      });
-
-      displayProducts(recommended, 'recommend-list');
-    }
-
-    function addToCart(productId) {
-      const item = products.find(p => p.id === productId);
-      cart.push(item);
-      updateCartUI();
-      alert(`เพิ่ม ${item.name} ลงในตะกร้าเรียบร้อย!`);
-    }
-
-    function removeFromCart(index) {
-      cart.splice(index, 1);
-      updateCartUI();
-    }
-
-    function updateCartUI() {
-      document.getElementById('cart-count').innerText = cart.length;
-      const cartItemsContainer = document.getElementById('cart-items');
-      cartItemsContainer.innerHTML = '';
-
-      let total = 0;
-      cart.forEach((item, index) => {
-        total += item.price;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${item.name}</td>
-          <td>${item.price.toLocaleString()} บาท</td>
-          <td><button class="btn btn-danger" onclick="removeFromCart(${index})">ลบ</button></td>
-        `;
-        cartItemsContainer.appendChild(tr);
-      });
-
-      document.getElementById('total-price').innerText = total.toLocaleString();
-    }
-
-    function checkout() {
-      if (cart.length === 0) {
-        alert('ตะกร้าสินค้าของคุณยังไม่มีสินค้า');
-        return;
-      }
-      alert('ขอบคุณสำหรับคำสั่งซื้อ!');
-      cart = [];
-      updateCartUI();
-    }
+    window.onload = () => {
+      renderTree(petTree, document.getElementById('treeContainer'));
+      renderGraphInfo();
+      renderPathSteps();
+    };
   </script>
 </body>
 </html>
